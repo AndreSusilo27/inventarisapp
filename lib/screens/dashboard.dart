@@ -7,6 +7,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:inventarisapp/screens/home.dart';
+import 'package:inventarisapp/screens/profile/setting.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen(
@@ -33,8 +34,8 @@ class _DashboardScreen extends State<DashboardScreen> {
 
     // Pastikan koneksi benar-benar memiliki akses ke internet
     bool hasInternet = false;
-    if (connectivityResult == ConnectivityResult.mobile ||
-        connectivityResult == ConnectivityResult.wifi) {
+    if (connectivityResult.contains(ConnectivityResult.mobile) ||
+        connectivityResult.contains(ConnectivityResult.wifi)) {
       try {
         final result = await InternetAddress.lookup('example.com');
         hasInternet = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
@@ -56,6 +57,45 @@ class _DashboardScreen extends State<DashboardScreen> {
     await Future.delayed(
         const Duration(seconds: 2)); // Simulasikan loading data baru
     checkConnectivity(); // Cek status koneksi ulang setelah refresh
+  }
+
+// Fungsi untuk menampilkan konfirmasi logout
+  Future<void> _showLogoutDialog() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Logout'),
+          content: const Text('Apakah Anda yakin ingin logout dari aplikasi?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Tidak'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Menutup dialog jika "Tidak"
+              },
+            ),
+            TextButton(
+              child: const Text('Ya'),
+              onPressed: () async {
+                // Logout dari Firebase
+                await _auth.signOut();
+
+                // Logout juga dari Google Sign-In
+                await GoogleSignIn().signOut();
+
+                // Arahkan ke halaman HomeScreen setelah logout
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomeScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -85,8 +125,12 @@ class _DashboardScreen extends State<DashboardScreen> {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              // Aksi untuk membuka pengaturan
-              Navigator.pushNamed(context, '/settings');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingScreens(),
+                ),
+              );
             },
           ),
           IconButton(
@@ -175,7 +219,7 @@ class _DashboardScreen extends State<DashboardScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          '@${user?.displayName ?? 'Nama Tidak Tersedia'}',
+                          '${user?.displayName ?? 'Nama Tidak Tersedia'}',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 20,
@@ -246,7 +290,12 @@ class _DashboardScreen extends State<DashboardScreen> {
                         style: TextStyle(color: Colors.white)),
                     tileColor: Colors.deepPurple.shade600,
                     onTap: () {
-                      Navigator.pushNamed(context, '/settings');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SettingScreens(),
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -290,6 +339,8 @@ class _DashboardScreen extends State<DashboardScreen> {
           ],
         ),
       ),
+      extendBodyBehindAppBar:
+          false, // Pastikan tubuh konten utama tidak menutupi AppBar
     );
   }
 }

@@ -21,71 +21,28 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = true;
     });
-
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-
-    // Validasi email dan password
-    if (email.isEmpty || password.isEmpty) {
-      _showSnackbar(
-        'Email dan password tidak boleh kosong.',
-        Colors.red,
-      );
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
-
-    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}').hasMatch(email)) {
-      _showSnackbar(
-        'Format email tidak valid.',
-        Colors.red,
-      );
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
-
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
+      String userEmail = userCredential.user?.email ?? 'No Email';
+      String userName = userCredential.user?.displayName ?? 'No Name';
 
-      User? user = userCredential.user;
-
-      if (user != null) {
-        if (!user.emailVerified) {
-          _showSnackbar(
-            'Email belum diverifikasi. Silakan periksa email Anda.',
-            Colors.orange,
-          );
-          setState(() {
-            _isLoading = false;
-          });
-          return;
-        }
-
-        String userEmail = user.email ?? 'No Email';
-        String userName = user.displayName ?? 'No Name';
-
-        _showSnackbar('Login berhasil', Colors.green);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DashboardScreen(
-              userEmail: userEmail,
-              userName: userName,
-            ),
+      _showSnackbar('Login berhasil', Colors.green); // Notifikasi berhasil
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DashboardScreen(
+            userEmail: userEmail,
+            userName: userName,
           ),
-        );
-      }
+        ),
+      );
     } catch (e) {
-      _showSnackbar('Login gagal: ${_handleAuthError(e)}', Colors.red);
+      _showSnackbar(
+          'Login gagal: ${e.toString()}', Colors.red); // Notifikasi gagal
     }
-
     setState(() {
       _isLoading = false;
     });
@@ -107,11 +64,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
         UserCredential userCredential =
             await _auth.signInWithCredential(credential);
-
         final String userEmail = userCredential.user?.email ?? 'User';
         final String userName = userCredential.user?.displayName ?? 'Anonymous';
 
-        _showSnackbar('Login berhasil dengan Google', Colors.green);
+        _showSnackbar('Login berhasil dengan Google',
+            Colors.green); // Notifikasi berhasil
 
         Navigator.pushReplacement(
           context,
@@ -124,28 +81,12 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
-      _showSnackbar(
-          'Login dengan Google gagal: ${_handleAuthError(e)}', Colors.red);
+      _showSnackbar('Login dengan Google gagal: ${e.toString()}',
+          Colors.red); // Notifikasi gagal
     }
     setState(() {
       _isLoading = false;
     });
-  }
-
-  String _handleAuthError(dynamic error) {
-    if (error is FirebaseAuthException) {
-      switch (error.code) {
-        case 'user-not-found':
-          return 'Pengguna tidak ditemukan. Silakan periksa email Anda.';
-        case 'wrong-password':
-          return 'Password salah. Silakan coba lagi.';
-        case 'network-request-failed':
-          return 'Koneksi jaringan gagal. Periksa koneksi Anda.';
-        default:
-          return 'Terjadi kesalahan: ${error.message}';
-      }
-    }
-    return 'Terjadi kesalahan yang tidak diketahui.';
   }
 
   void _showSnackbar(String message, Color color) {
@@ -153,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
       SnackBar(
         content: Text(message),
         backgroundColor: color,
+        duration: const Duration(seconds: 3),
       ),
     );
   }

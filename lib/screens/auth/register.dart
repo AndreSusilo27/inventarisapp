@@ -14,10 +14,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
+  // Fungsi untuk validasi kekuatan password
+  bool _isPasswordValid(String password) {
+    final RegExp passwordRegExp = RegExp(
+      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$',
+    );
+    return passwordRegExp.hasMatch(password);
+  }
+
   Future<void> _registerWithEmailAndPassword() async {
     setState(() {
       _isLoading = true;
     });
+
+    // Validasi password sebelum mendaftar ke Firebase
+    if (!_isPasswordValid(_passwordController.text.trim())) {
+      _showSnackbar(
+        'Password harus minimal 6 karakter dan mengandung huruf besar, huruf kecil, dan angka',
+        Colors.red,
+      );
+      setState(() {
+        _isLoading = false;
+      });
+      return; // Menghentikan proses jika password tidak valid
+    }
 
     try {
       final UserCredential userCredential =
@@ -27,28 +47,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (userCredential.user != null) {
-        // Navigasi atau tampilkan pesan sukses
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Registration successful!")),
-        );
-        Navigator.pop(context);
+        // Tampilkan pesan sukses
+        _showSnackbar('Registrasi berhasil!', Colors.green);
+        Navigator.pop(context); // Kembali ke layar login
       }
     } on FirebaseAuthException catch (e) {
       String message;
       if (e.code == 'weak-password') {
-        message = 'Password is too weak!';
+        message = 'Password terlalu lemah!';
       } else if (e.code == 'email-already-in-use') {
-        message = 'Email is already registered!';
+        message = 'Email sudah terdaftar!';
       } else {
-        message = 'Registration failed!';
+        message = 'Registrasi gagal!';
       }
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
+      _showSnackbar(message, Colors.red);
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
+  }
+
+  // Fungsi untuk menampilkan Snackbar dengan warna berbeda
+  void _showSnackbar(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+      ),
+    );
   }
 
   @override

@@ -1,3 +1,8 @@
+//Andre Susilo
+//21552011246
+//Teknik Informatika
+//Pemrograman Mobile 2
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class AboutScreen extends StatefulWidget {
-  const AboutScreen({super.key});
+class ItemListScreen extends StatefulWidget {
+  const ItemListScreen({super.key});
 
   @override
-  State<AboutScreen> createState() => _AboutScreenState();
+  State<ItemListScreen> createState() => _ItemListScreenState();
 }
 
-class _AboutScreenState extends State<AboutScreen> {
+class _ItemListScreenState extends State<ItemListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,7 +16,7 @@ class _AboutScreenState extends State<AboutScreen> {
       ),
       body: Center(
         child: const Text(
-          'This is the About Screen!',
+          'This is the Item List Screen!',
           style: TextStyle(fontSize: 24),
         ),
       ),
