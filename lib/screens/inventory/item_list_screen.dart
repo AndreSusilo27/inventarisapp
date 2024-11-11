@@ -14,8 +14,8 @@ class _ItemListScreenState extends State<ItemListScreen> {
       appBar: AppBar(
         title: const Text('About'),
       ),
-      body: Center(
-        child: const Text(
+      body: const Center(
+        child: Text(
           'This is the Item List Screen!',
           style: TextStyle(fontSize: 24),
         ),

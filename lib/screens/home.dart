@@ -38,8 +38,10 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 colors: [
-                  Color.fromARGB(255, 0, 16, 121),
-                  Color(0xff92effd),
+                  Color.fromARGB(255, 207, 155, 1), // 1
+                  Colors.amber, // 2
+                  Colors.amber, // 3
+                  Colors.white,
                 ],
                 duration: Duration(seconds: 5),
               ),

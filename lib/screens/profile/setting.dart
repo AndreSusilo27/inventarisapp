@@ -14,8 +14,8 @@ class _SettingScreensState extends State<SettingScreens> {
       appBar: AppBar(
         title: const Text('Setting'),
       ),
-      body: Center(
-        child: const Text(
+      body: const Center(
+        child: Text(
           'This is the Setting Screen!',
           style: TextStyle(fontSize: 24),
         ),

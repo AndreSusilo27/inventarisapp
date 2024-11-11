@@ -14,8 +14,8 @@ class _AboutScreenState extends State<AboutScreen> {
       appBar: AppBar(
         title: const Text('About'),
       ),
-      body: Center(
-        child: const Text(
+      body: const Center(
+        child: Text(
           'This is the About Screen!',
           style: TextStyle(fontSize: 24),
         ),

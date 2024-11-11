@@ -3,6 +3,8 @@
 //Teknik Informatika
 //Pemrograman Mobile 2
 
+//Aplikasi Inventaris dengan nama aplikasi "Sikoin" singkatan dari Sikocak Inventory
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
