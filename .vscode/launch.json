@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "inventarisapp",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "type": "dart"
+    },
+    {
+      "name": "inventarisapp (profile mode)",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "inventarisapp (release mode)",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "type": "dart",
+      "flutterMode": "release"
+    }
+  ]
+}
