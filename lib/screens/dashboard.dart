@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_gradient_animation_text/flutter_gradient_animation_text.dart';
@@ -12,7 +13,10 @@ import 'package:inventarisapp/screens/profile/setting.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen(
-      {super.key, required this.userEmail, required this.userName});
+      {super.key,
+      required this.userEmail,
+      required this.userName,
+      required userPhotoUrl});
   final String userEmail;
   final String userName;
 
@@ -23,6 +27,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreen extends State<DashboardScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String _connectionStatus = 'Unknown';
+  String? firebasePhotoUrl;
 
   // Fungsi untuk mendapatkan data pengguna saat ini
   Future<User?> getCurrentUser() async {
@@ -51,6 +56,23 @@ class _DashboardScreen extends State<DashboardScreen> {
 
     // Menambahkan print untuk debug log
     print('Connection Status: $_connectionStatus');
+  }
+
+  Future<void> _fetchFirebasePhotoUrl() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    // Dapatkan URL foto dari Firebase Storage (jika ada)
+    try {
+      final imageRef =
+          FirebaseStorage.instance.ref().child('user_photos/${user?.uid}.jpg');
+      final url = await imageRef.getDownloadURL();
+      setState(() {
+        firebasePhotoUrl = url; // Simpan URL foto dari Firebase
+      });
+    } catch (e) {
+      print('Foto dari Firebase tidak tersedia: $e');
+      // Tidak melakukan apa-apa, firebasePhotoUrl akan tetap null jika tidak ada foto di Firebase
+    }
   }
 
   // Fungsi refresh untuk dipanggil saat pull-to-refresh dilakukan
@@ -333,10 +355,15 @@ class _DashboardScreen extends State<DashboardScreen> {
                       children: [
                         CircleAvatar(
                           radius: 65,
-                          backgroundImage: user?.photoURL != null
-                              ? NetworkImage(user!.photoURL!)
-                              : const NetworkImage(
-                                  'https://www.w3schools.com/howto/img_avatar.png'),
+                          backgroundImage: firebasePhotoUrl != null
+                              ? NetworkImage(
+                                  firebasePhotoUrl!) // Gunakan foto dari Firebase jika ada
+                              : user?.photoURL != null
+                                  ? NetworkImage(user!
+                                      .photoURL!) // Gunakan foto dari snapshot jika ada
+                                  : const NetworkImage(
+                                      'https://www.w3schools.com/howto/img_avatar.png', // Gunakan foto default
+                                    ),
                           backgroundColor: Colors.grey[300],
                         ),
                         const SizedBox(height: 16),
@@ -474,7 +501,7 @@ class _DashboardScreen extends State<DashboardScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const SettingScreens(),
+                          builder: (context) => SettingScreen(),
                         ),
                       );
                     },

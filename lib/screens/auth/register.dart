@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:inventarisapp/services/local_db_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -40,6 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     try {
+      // Registrasi di Firebase
       final UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
@@ -47,7 +49,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (userCredential.user != null) {
-        // Tampilkan pesan sukses
+        // Jika registrasi Firebase berhasil, simpan data ke SQLite
+        await LocalDBService().addUser({
+          'email': _emailController.text.trim(),
+          'password': _passwordController.text.trim(),
+          'name': 'User', // Gantilah dengan nama pengguna jika diperlukan
+          'photo': '',
+          'role': 'user', // Misalnya role user biasa
+        });
+
+        // Tampilkan pesan sukses dan kembali ke layar login
         _showSnackbar('Registrasi berhasil!', Colors.green);
         Navigator.pop(context); // Kembali ke layar login
       }

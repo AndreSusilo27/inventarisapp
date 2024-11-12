@@ -30,10 +30,10 @@ class LocalDBService {
       CREATE TABLE Users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         email TEXT UNIQUE NOT NULL,
-        name TEXT NOT NULL,
+        name TEXT,
         password TEXT,
         photo TEXT,  -- Column for user photo
-        role TEXT NOT NULL
+        role TEXT
       )
     ''');
 
@@ -95,6 +95,17 @@ class LocalDBService {
       'Users',
       where: 'email = ?',
       whereArgs: [email],
+    );
+    return result.isNotEmpty ? result.first : null;
+  }
+
+  Future<Map<String, dynamic>?> getUserByEmailAndPassword(
+      String email, String password) async {
+    final db = await database;
+    final result = await db.query(
+      'Users',
+      where: 'email = ? AND password = ?',
+      whereArgs: [email, password],
     );
     return result.isNotEmpty ? result.first : null;
   }
